@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neo Anderson - Digital Reality Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier Prime', monospace;
+            background: #000;
+            color: #00ff41;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Matrix Code Rain Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Content Layer */
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff41;
+        }
+
+        nav a {
+            color: #00ff41;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-right: 1px solid #00ff41;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        nav a:last-child { border-right: none; }
+        
+        nav a:hover, nav a.active {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 20px #00ff41;
+        }
+
+        /* Sections */
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0 50px;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        .section-content {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #00ff41;
+            padding: 50px;
+            max-width: 1200px;
+            width: 100%;
+            backdrop-filter: blur(2px);
+            position: relative;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #00ff41;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #00ff41;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #00ff41;
+            padding-bottom: 10px;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #00ff41;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .matrix-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            font-family: 'Courier Prime', monospace;
+            cursor: pointer;
+        }
+
+        .matrix-btn:hover {
+            background: #00ff41;
+            color: #000;
+            box-shadow: 0 0 30px #00ff41;
+        }
+
+        /* Project Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .project-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .project-card:hover {
+            border-color: #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .project-card h3 {
+            color: #00ff41;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .project-meta {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .project-actions {
+            margin-top: 15px;
+        }
+
+        /* Blog Posts */
+        .blog-grid {
+            display: grid;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .blog-post {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .blog-post:hover {
+            border-color: #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .blog-post h3 {
+            color: #00ff41;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .blog-meta {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .blog-excerpt {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid #00ff41;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Animations */
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41; }
+            50% { text-shadow: 0 0 20px #00ff41, 0 0 30px #00ff41, 0 0 40px #00ff41; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .section { padding: 0 20px; }
+            .section-content { padding: 30px 25px; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            nav a { padding: 10px 15px; font-size: 10px; }
+            .projects-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Modal -->
+    <div class="modal" id="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="modalTitle">Modal Title</h3>
+                <button class="modal-close" onclick="closeModal()">X</button>
+            </div>
+            <div id="modalBody">Modal content</div>
+        </div>
+    </div>
+
+    <div class="content">
+        <nav>
+            <a href="#" class="nav-link active" data-section="home">SYSTEM</a>
+            <a href="#" class="nav-link" data-section="about">PROFILE</a>
+            <a href="#" class="nav-link" data-section="projects">PROGRAMS</a>
+            <a href="#" class="nav-link" data-section="blog">ARCHIVES</a>
+            <a href="#" class="nav-link" data-section="contact">ACCESS</a>
+        </nav>
+
+        <section class="section" id="home">
+            <div class="section-content">
+                <h1>NEO ANDERSON</h1>
+                <p>SYSTEM: MATRIX v3.1.41</p>
+                <p>STATUS: ONLINE</p>
+                <p>CLEARANCE: LEVEL 10</p>
+                <p>MISSION: DIGITAL REALITY ARCHITECT</p>
+                <br>
+                <p>Welcome to the construct. Here you can access my digital portfolio, view classified projects, read archived transmissions, and initiate secure communications.</p>
+                <br>
+                <p>Remember: There is no spoon.</p>
+                <button class="matrix-btn" data-section="projects">ENTER THE MATRIX</button>
+            </div>
+        </section>
+
+        <section class="section hidden" id="about">
+            <div class="section-content">
+                <h2>SYSTEM PROFILE</h2>
+                <p>DESIGNATION: THE ONE</p>
+                <p>SPECIALIZATION: QUANTUM PROGRAMMING, REALITY MANIPULATION, DIGITAL ARCHITECTURE</p>
+                <br>
+                <p>Years of experience navigating between the digital and physical realms have equipped me with unique abilities to bend code, manipulate data structures, and architect impossible digital realities.</p>
+                <br>
+                <p>Core competencies include:</p>
+                <p>• Matrix code interpretation and manipulation</p>
+                <p>• Three.js and WebGL reality construction</p>
+                <p>• Advanced shader programming</p>
+                <p>• Real-time physics simulation</p>
+                <p>• Agent detection and countermeasures</p>
+                <br>
+                <p>Current objective: Liberate minds through immersive digital experiences.</p>
+            </div>
+        </section>
+
+        <section class="section hidden" id="projects">
+            <div class="section-content">
+                <h2>CLASSIFIED PROGRAMS</h2>
+                <div class="projects-grid" id="projectsGrid"></div>
+            </div>
+        </section>
+
+        <section class="section hidden" id="blog">
+            <div class="section-content">
+                <h2>ARCHIVED TRANSMISSIONS</h2>
+                <div class="blog-grid" id="blogGrid"></div>
+            </div>
+        </section>
+
+        <section class="section hidden" id="contact">
+            <div class="section-content">
+                <h2>SECURE ACCESS</h2>
+                <p>COMMUNICATION PROTOCOL: ENCRYPTED</p>
+                <p>AUTHENTICATION: RETINAL SCAN REQUIRED</p>
+                <br>
+                <p>Contact Information:</p>
+                <p>• Secure Line: +1-555-MATRIX</p>
+                <p>• Encrypted Email: neo@thematrix.net</p>
+                <p>• Emergency Broadcast: Channel 30327</p>
+                <p>• Physical Location: [CLASSIFIED]</p>
+                <br>
+                <p>Warning: All communications are monitored by Agent Smith.</p>
+                <p>Use secure channels only. Trust no one.</p>
+                <br>
+                <a href="mailto:neo@thematrix.net" class="matrix-btn">ESTABLISH LINK</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Data Storage
+        const projectsData = [
+            {
+                id: 1,
+                title: "PROJECT ZION",
+                description: "Real-time 3D city simulation with dynamic weather systems, traffic AI, and procedural architecture generation. Built for training simulations.",
+                techStack: "Three.js, WebGL, GLSL Shaders",
+                url: "",
+                dateAdded: "2024-01-15"
+            },
+            {
+                id: 2,
+                title: "NEBUCHADNEZZAR",
+                description: "Advanced starship navigation system with real-time 3D space mapping, quantum tunnel calculations, and EMP blast radius modeling.",
+                techStack: "WebGL, Physics Engine, Neural Networks",
+                url: "",
+                dateAdded: "2024-02-03"
+            },
+            {
+                id: 3,
+                title: "THE CONSTRUCT",
+                description: "Virtual training environment with unlimited customization. Features realistic physics, combat simulation, and skill acquisition protocols.",
+                techStack: "Three.js, WebXR, Machine Learning",
+                url: "",
+                dateAdded: "2024-02-20"
+            },
+            {
+                id: 4,
+                title: "ORACLE DATABASE",
+                description: "Predictive analytics system capable of calculating probability matrices and potential future outcomes. Highly classified.",
+                techStack: "Quantum Computing, AI, Blockchain",
+                url: "",
+                dateAdded: "2024-03-01"
+            }
+        ];
+
+        const blogData = [
+            {
+                id: 1,
+                title: "MATRIX PROTOCOL: UNDERSTANDING THE CODE",
+                excerpt: "Deep dive into the fundamental principles of Matrix code manipulation and the nature of digital reality.",
+                content: "The Matrix is a complex system of interconnected code streams that form the foundation of perceived reality. By understanding the underlying algorithms, we can begin to manipulate the very fabric of this digital construct. This requires mastery of multiple programming languages and an intuitive understanding of how data flows through virtual systems.",
+                category: "Matrix Tech",
+                dateAdded: "2024-08-15"
+            },
+            {
+                id: 2,
+                title: "AGENT DETECTION ALGORITHMS",
+                excerpt: "Advanced techniques for identifying and evading Agent Smith's surveillance protocols.",
+                content: "Agents are sentient programs designed to eliminate anomalies within the Matrix. Their behavior patterns can be predicted and countered with the right algorithmic approach. Key indicators include sudden environmental changes, NPC behavior anomalies, and distinctive digital signatures in the code stream.",
+                category: "Security",
+                dateAdded: "2024-08-10"
+            },
+            {
+                id: 3,
+                title: "BUILDING IMPOSSIBLE ARCHITECTURES",
+                excerpt: "How to construct reality-bending structures using Three.js and advanced shader programming.",
+                content: "The laws of physics in the digital realm are merely suggestions. With proper understanding of 3D mathematics and shader programming, we can create architectures that defy conventional logic. This involves manipulating vertex positions, implementing non-Euclidean geometry, and creating spatial paradoxes that exist only in digital space.",
+                category: "Digital Reality",
+                dateAdded: "2024-08-05"
+            }
+        ];
+
+        // Simple Matrix Rain Effect
+        class MatrixRain {
+            constructor() {
+                this.canvas = document.getElementById('matrix-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                
+                this.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                this.charArray = this.chars.split('');
+                
+                this.fontSize = 14;
+                this.columns = Math.floor(this.canvas.width / this.fontSize);
+                this.drops = [];
+                
+                for(let i = 0; i < this.columns; i++) {
+                    this.drops[i] = Math.random() * -100;
+                }
+                
+                this.animate();
+            }
+            
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+            
+            draw() {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.ctx.fillStyle = '#00ff41';
+                this.ctx.font = this.fontSize + 'px Courier Prime';
+                
+                for(let i = 0; i < this.drops.length; i++) {
+                    const text = this.charArray[Math.floor(Math.random() * this.charArray.length)];
+                    this.ctx.fillText(text, i * this.fontSize, this.drops[i] * this.fontSize);
+                    
+                    if(this.drops[i] * this.fontSize > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                    }
+                    
+                    this.drops[i]++;
+                }
+            }
+            
+            animate() {
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show target section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Find and activate the correct nav link
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sectionMap = {
+                'home': 0,
+                'about': 1, 
+                'projects': 2,
+                'blog': 3,
+                'contact': 4
+            };
+            
+            if (sectionMap[sectionId] !== undefined) {
+                navLinks[sectionMap[sectionId]].classList.add('active');
+            }
+        }
+
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = '';
+            
+            projectsData.forEach(project => {
+                const projectCard = document.createElement('div');
+                projectCard.className = 'project-card';
+                projectCard.innerHTML = `
+                    <h3>${project.title}</h3>
+                    <div class="project-meta">Added: ${project.dateAdded}</div>
+                    <p>${project.description}</p>
+                    <p><strong>Tech Stack:</strong> ${project.techStack}</p>
+                    ${project.url ? `<p><strong>URL:</strong> <a href="${project.url}" target="_blank" style="color: #00ff41;">${project.url}</a></p>` : ''}
+                    <div class="project-actions">
+                        <button class="matrix-btn" data-project-id="${project.id}" data-action="view">VIEW DETAILS</button>
+                    </div>
+                `;
+                grid.appendChild(projectCard);
+
+                // Add event listener to the view button
+                const viewBtn = projectCard.querySelector('[data-action="view"]');
+                viewBtn.addEventListener('click', () => viewProject(project.id));
+            });
+        }
+
+        function renderBlog() {
+            const grid = document.getElementById('blogGrid');
+            grid.innerHTML = '';
+            
+            blogData.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)).forEach(post => {
+                const blogPost = document.createElement('div');
+                blogPost.className = 'blog-post';
+                blogPost.innerHTML = `
+                    <h3>${post.title}</h3>
+                    <div class="blog-meta">${post.category} • ${post.dateAdded}</div>
+                    <div class="blog-excerpt">${post.excerpt}</div>
+                    <div class="blog-actions">
+                        <button class="matrix-btn" data-post-id="${post.id}" data-action="read">READ TRANSMISSION</button>
+                    </div>
+                `;
+                grid.appendChild(blogPost);
+
+                // Add event listener to the read button
+                const readBtn = blogPost.querySelector('[data-action="read"]');
+                readBtn.addEventListener('click', () => readBlogPost(post.id));
+            });
+        }
+
+        function viewProject(id) {
+            const project = projectsData.find(p => p.id === id);
+            if (!project) return;
+            
+            document.getElementById('modalTitle').textContent = project.title;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="project-meta">Added: ${project.dateAdded}</div>
+                <p><strong>Tech Stack:</strong> ${project.techStack}</p>
+                ${project.url ? `<p><strong>URL:</strong> <a href="${project.url}" target="_blank" style="color: #00ff41;">${project.url}</a></p>` : ''}
+                <br>
+                <p>${project.description}</p>
+            `;
+            openModal();
+        }
+
+        function readBlogPost(id) {
+            const post = blogData.find(p => p.id === id);
+            if (!post) return;
+            
+            document.getElementById('modalTitle').textContent = post.title;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="blog-meta">${post.category} • ${post.dateAdded}</div>
+                <br>
+                <div style="line-height: 1.8;">${post.content.replace(/\n/g, '<br>')}</div>
+            `;
+            openModal();
+        }
+
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start Matrix rain
+            new MatrixRain();
+            
+            // Render initial content
+            renderProjects();
+            renderBlog();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            console.log('Matrix Portfolio initialized');
+        });
+
+        function setupEventListeners() {
+            // Navigation links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+
+            // Matrix buttons that navigate
+            document.querySelectorAll('[data-section]').forEach(btn => {
+                if (!btn.classList.contains('nav-link')) {
+                    btn.addEventListener('click', function() {
+                        const section = this.getAttribute('data-section');
+                        showSection(section);
+                    });
+                }
+            });
+
+            // Modal close
+            document.getElementById('modal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        }
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('matrix-canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
